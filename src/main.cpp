@@ -1,6 +1,6 @@
 /*
 Debug Terminal Command:
-g++ -o debug -Wall -I ./include/ src/main.cpp src/Renderer.cpp src/Camera.cpp src/InputHandler.cpp -lSDL2
+g++ -o debug -Wall -I ./include/ src/main.cpp src/Renderer.cpp src/Camera.cpp src/InputHandler.cpp src/Chunk.cpp src/World.cpp -lSDL2
 
 */
 
@@ -12,6 +12,7 @@ g++ -o debug -Wall -I ./include/ src/main.cpp src/Renderer.cpp src/Camera.cpp sr
 
 #include "Renderer.h"
 #include "InputHandler.h"
+#include "World.h"
 
 #define DEBUG
 
@@ -39,6 +40,7 @@ SDL_Window* window;
 SDL_Surface* surface;
 SDL_Event event;
 
+World world;
 Renderer renderer;
 Camera mainCamera;
 InputHandler inputHandler;
@@ -84,8 +86,10 @@ int init()
         return 1;
     }
 
-    renderer = Renderer(window, &mainCamera);
+    renderer = Renderer(window, &world, &mainCamera);
     initInputHandler();
+    world.createEmptyChunk(0, 0);
+    world.createEmptyChunk(-1, -1);
 
     return 0;
 }
@@ -113,8 +117,9 @@ void draw()
     // Begin drawing
 
     SDL_FillRect(surface, nullptr, 0);
-    renderer.drawCell(0xFFFFFF, -1, -1);
-    renderer.drawCell(0xFFFFFF, 0, 0);
+    renderer.debugChunks();
+    //renderer.drawPixel(0xFFFFFF, -1, -1);
+    //renderer.drawPixel(0xFFFFFF, 0, 0);
 
     // Stop drawing
     if (shouldLock) { SDL_UnlockSurface(surface); }

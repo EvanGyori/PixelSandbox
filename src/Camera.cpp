@@ -4,9 +4,9 @@ Camera::Camera()
 {
     x = 0.0f;
     y = 0.0f;
-    cellToPixels = 50.0f;
+    cellToPixels = 5;
 
-    panSpeed = 1.0f;
+    panSpeed = 5.0f;
     zoomSpeed = 1;
 }
 

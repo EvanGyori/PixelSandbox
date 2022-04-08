@@ -5,24 +5,28 @@
 #include <cstdint>
 
 #include "Camera.h"
+#include "World.h"
 
-#define DEBUG
+//#define DEBUG
 
 class Renderer
 {
 public:
     Renderer();
-    Renderer(SDL_Window* _window, Camera* _camera);
+    Renderer(SDL_Window* _window, World* _world, Camera* _camera);
     ~Renderer();
 
     // Make sure you grab the surface every frame
     // (it changes on window resize)
     void getSurface();
 
-    void drawCell(uint32_t color, int x, int y);
+    void drawPixel(uint32_t color, int x, int y);
+
+    void debugChunks();
 
 private:
     SDL_Window* window;
     SDL_Surface* surface;
+    World* world;
     Camera* camera;
 };

@@ -1,12 +1,12 @@
 #include "Renderer.h"
 
 Renderer::Renderer()
-: window(nullptr), surface(nullptr), camera(nullptr)
+: window(nullptr), surface(nullptr), world(nullptr), camera(nullptr)
 {
 }
 
-Renderer::Renderer(SDL_Window* _window, Camera* _camera)
-: window(_window), surface(nullptr), camera(_camera)
+Renderer::Renderer(SDL_Window* _window, World* _world, Camera* _camera)
+: window(_window), surface(nullptr), world(_world), camera(_camera)
 {
     getSurface();
 }
@@ -20,7 +20,7 @@ void Renderer::getSurface()
     surface = SDL_GetWindowSurface(window);
 }
 
-void Renderer::drawCell(uint32_t color, int x, int y)
+void Renderer::drawPixel(uint32_t color, int x, int y)
 {
     // w, h - width and height of cell in pixels
     int w = camera->getScale();
@@ -57,4 +57,50 @@ void Renderer::drawCell(uint32_t color, int x, int y)
         }
     }
     */
+}
+
+void Renderer::debugChunks()
+{
+    // sw, sh - screen width and height in pixels
+    int sw, sh;
+    SDL_GetWindowSize(window, &sw, &sh);
+
+    uint32_t color = 0x123FFF;
+
+    std::vector<Chunk>* chunks = world->getChunks();
+    for (Chunk& chunk : (*chunks))
+    {
+        // Chunk coordinates
+        int cx = chunk.getX() * Chunk::size;
+        int cy = chunk.getY() * Chunk::size;
+        camera->convertToScreen(cx, cy, sw, sh);
+
+        SDL_Rect rects[4];
+
+        // Draw top horizontal
+        rects[0].x = cx;
+        rects[0].y = cy;
+        rects[0].w = camera->getScale() * Chunk::size;
+        rects[0].h = 1;
+
+        // Draw bottom horizontal
+        rects[1].x = cx;
+        rects[1].y = cy + camera->getScale() * Chunk::size;
+        rects[1].w = rects[0].w;
+        rects[1].h = rects[0].h;
+
+        // Draw left vertical
+        rects[2].x = cx;
+        rects[2].y = cy;
+        rects[2].w = 1;
+        rects[2].h = camera->getScale() * Chunk::size;
+
+        // Draw right vertical
+        rects[3].x = cx + camera->getScale() * Chunk::size;
+        rects[3].y = cy;
+        rects[3].w = rects[2].w;
+        rects[3].h = rects[2].h + 1;
+
+        SDL_FillRects(surface, rects, 4, color);
+    }
 }
