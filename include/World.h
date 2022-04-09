@@ -1,8 +1,13 @@
 #pragma once
 
 #include <vector>
+#include <unordered_map>
+#include <utility>
 
 #include "Chunk.h"
+#include "HashPair.h"
+
+typedef std::unordered_map<std::pair<int, int>, Chunk, HashPair> ChunkMap;
 
 class World
 {
@@ -10,10 +15,11 @@ public:
     World();
     ~World();
 
-    std::vector<Chunk>* getChunks();
+    ChunkMap* getChunks();
 
     void createEmptyChunk(int x, int y);
 
 private:
-    std::vector<Chunk> chunks;
+    ChunkMap chunks;
+    //std::vector<Chunk> chunks;
 };

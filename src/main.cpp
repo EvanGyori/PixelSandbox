@@ -88,8 +88,13 @@ int init()
 
     renderer = Renderer(window, &world, &mainCamera);
     initInputHandler();
-    world.createEmptyChunk(0, 0);
-    world.createEmptyChunk(-1, -1);
+    for (int x = -10; x < 10; x++) {
+        for (int y = -10; y < 10; y++) {
+            world.createEmptyChunk(x, y);
+        }
+    }
+    //world.createEmptyChunk(0, 0);
+    //world.createEmptyChunk(-1, -1);
 
     return 0;
 }
@@ -117,7 +122,7 @@ void draw()
     // Begin drawing
 
     SDL_FillRect(surface, nullptr, 0);
-    renderer.debugChunks();
+    renderer.draw();
     //renderer.drawPixel(0xFFFFFF, -1, -1);
     //renderer.drawPixel(0xFFFFFF, 0, 0);
 

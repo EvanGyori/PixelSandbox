@@ -10,20 +10,7 @@ Chunk::Chunk(int _x, int _y)
     y = _y;
 
     for (int i = 0; i < cellsLength; i++) {
-        cells[i] = rand() % 2;
+        uint32_t color = rand() * 131000; //pow(rand() % 256, 4);
+        cells[i] = Cell(color);
     }
-}
-
-Chunk::~Chunk()
-{
-}
-
-int Chunk::getX()
-{
-    return x;
-}
-
-int Chunk::getY()
-{
-    return y;
 }

@@ -8,12 +8,12 @@ World::~World()
 {
 }
 
-std::vector<Chunk>* World::getChunks()
+ChunkMap* World::getChunks()
 {
     return &chunks;
 }
 
 void World::createEmptyChunk(int x, int y)
 {
-    chunks.push_back(Chunk(x ,y));
+    chunks[std::make_pair(x, y)] = Chunk(x, y);
 }

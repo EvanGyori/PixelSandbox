@@ -22,11 +22,16 @@ public:
 
     void drawPixel(uint32_t color, int x, int y);
 
-    void debugChunks();
+    void draw();
+    void drawChunk(Chunk& chunk);
+    void debugChunk(Chunk& chunk, uint32_t color);
 
 private:
     SDL_Window* window;
     SDL_Surface* surface;
     World* world;
     Camera* camera;
+
+    // Screen width and height, updates every frame
+    int sw, sh;
 };

@@ -59,48 +59,97 @@ void Renderer::drawPixel(uint32_t color, int x, int y)
     */
 }
 
-void Renderer::debugChunks()
+void Renderer::draw()
 {
-    // sw, sh - screen width and height in pixels
-    int sw, sh;
     SDL_GetWindowSize(window, &sw, &sh);
 
-    uint32_t color = 0x123FFF;
+    ChunkMap* chunks = world->getChunks();
 
-    std::vector<Chunk>* chunks = world->getChunks();
-    for (Chunk& chunk : (*chunks))
-    {
-        // Chunk coordinates
-        int cx = chunk.getX() * Chunk::size;
-        int cy = chunk.getY() * Chunk::size;
-        camera->convertToScreen(cx, cy, sw, sh);
+    /*
+    // csw and csh - chunk screen width and height,
+    // number of chunks that span across the screen
+    int csw = sw / (camera->getScale() * Chunk::size);
+    int csh = sh / (camera->getScale() * Chunk::size);
 
-        SDL_Rect rects[4];
+    int startX = camera->getX() / Chunk::size - csw/2;
+    int startY = camera->getY() / Chunk::size - csh/2;
 
-        // Draw top horizontal
-        rects[0].x = cx;
-        rects[0].y = cy;
-        rects[0].w = camera->getScale() * Chunk::size;
-        rects[0].h = 1;
+    int endX = startX + csw;
+    int endY = startY + csh;
+    */
 
-        // Draw bottom horizontal
-        rects[1].x = cx;
-        rects[1].y = cy + camera->getScale() * Chunk::size;
-        rects[1].w = rects[0].w;
-        rects[1].h = rects[0].h;
+    
+    // The camera conversion function will
+    // find the edges of the screen to only
+    // iterate through the chunks on the screen
+    int startX = 0;
+    int startY = 0;
+    int endX = sw;
+    int endY = sh;
 
-        // Draw left vertical
-        rects[2].x = cx;
-        rects[2].y = cy;
-        rects[2].w = 1;
-        rects[2].h = camera->getScale() * Chunk::size;
+    camera->convertToWorld(startX, startY, sw, sh);
+    camera->convertToWorld(endX, endY, sw, sh);
 
-        // Draw right vertical
-        rects[3].x = cx + camera->getScale() * Chunk::size;
-        rects[3].y = cy;
-        rects[3].w = rects[2].w;
-        rects[3].h = rects[2].h + 1;
-
-        SDL_FillRects(surface, rects, 4, color);
+    // Divide by chunk size to get chunk coordinates
+    startX /= Chunk::size; startY /= Chunk::size;
+    endX /= Chunk::size; endY /= Chunk::size;
+    
+    for (int x = startX - 1; x < endX + 1; x++) {
+        for (int y = startY - 1; y < endY + 1; y++) {
+            auto key = std::make_pair(x, y);
+            if (chunks->find(key) != chunks->end()) {
+                drawChunk((*chunks)[key]);
+                debugChunk((*chunks)[key], 0x123fff);
+            }
+        }
     }
+}
+
+void Renderer::drawChunk(Chunk& chunk)
+{
+    int cx = chunk.x * Chunk::size;
+    int cy = chunk.y * Chunk::size;
+
+    for (int x = 0; x < Chunk::size; x++) {
+        for (int y = 0; y < Chunk::size; y++) {
+            int index = x + y * Chunk::size;
+            drawPixel(chunk.cells[index].color, x + cx, y + cy);
+        }
+    }
+}
+
+void Renderer::debugChunk(Chunk& chunk, uint32_t color)
+{
+    // Chunk coordinates
+    int cx = chunk.x * Chunk::size;
+    int cy = chunk.y * Chunk::size;
+    camera->convertToScreen(cx, cy, sw, sh);
+
+    SDL_Rect rects[4];
+
+    // Draw top horizontal
+    rects[0].x = cx;
+    rects[0].y = cy;
+    rects[0].w = camera->getScale() * Chunk::size;
+    rects[0].h = 1;
+
+    // Draw bottom horizontal
+    rects[1].x = cx;
+    rects[1].y = cy + camera->getScale() * Chunk::size;
+    rects[1].w = rects[0].w;
+    rects[1].h = rects[0].h;
+
+    // Draw left vertical
+    rects[2].x = cx;
+    rects[2].y = cy;
+    rects[2].w = 1;
+    rects[2].h = camera->getScale() * Chunk::size;
+
+    // Draw right vertical
+    rects[3].x = cx + camera->getScale() * Chunk::size;
+    rects[3].y = cy;
+    rects[3].w = rects[2].w;
+    rects[3].h = rects[2].h + 1;
+
+    SDL_FillRects(surface, rects, 4, color);
 }
