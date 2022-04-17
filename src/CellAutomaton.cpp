@@ -51,6 +51,14 @@ CellAutomaton::~CellAutomaton()
 {
 }
 
+void CellAutomaton::initChunk(Chunk& chunk)
+{
+    for (int i = 0; i < Chunk::cellsLength; i++) {
+        Element::elements[chunk.cells[i].element]->
+        initCell(chunk.cells[i]);
+    }
+}
+
 Cell* CellAutomaton::getCell(int x, int y)
 {
     #if defined(DEBUG)
@@ -94,6 +102,7 @@ Cell* CellAutomaton::getCell(int x, int y)
         // If no chunk exists at the spot, create an empty one
         world->createEmptyChunk(chunkX, chunkY);
         cellChunk = &chunkMap->at(pair);
+        initChunk((*cellChunk));
     }
 
     return &cellChunk->cells[x + y * Chunk::size];

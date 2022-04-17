@@ -25,7 +25,7 @@ typedef ch::system_clock::time_point ch_time;
 ch_time frameTimer;
 
 // minimum time per frame in seconds
-const float refreshRateCap = 0.3f;
+const float refreshRateCap = 0.1f;
 
 // how long mainloop took to complete
 float frameTime;
@@ -75,9 +75,11 @@ void initInputHandler()
 void initElements()
 {
     Element::elements[ELEMENTS::EMPTY] =
-        new Element(ELEMENTS::EMPTY, 0.0f);
+        new Element(ELEMENTS::EMPTY, false, 0.0f);
     Element::elements[ELEMENTS::SAND] =
-        new Sand(ELEMENTS::SAND, 1.0f);
+        new FallingElement(ELEMENTS::SAND, true, 1.0f);
+    Element::elements[ELEMENTS::STONE] =
+        new StoneElement(ELEMENTS::STONE, true, 1.0f);
 }
 
 int init()
@@ -108,6 +110,14 @@ int init()
     }
     */
     world.createEmptyChunk(0, 0);
+    Chunk& chunk = world.getChunks()->at(std::make_pair(0, 0));
+    for (int i = 0; i < Chunk::cellsLength; i++) {
+        chunk.cells[i].element = rand() % 2;
+    }
+    for (int i = 240; i < 256; i++) {
+        chunk.cells[i].element = 2;
+    }
+    CellAutomaton::initChunk(chunk);
     //world.createEmptyChunk(-1, -1);
 
     return 0;

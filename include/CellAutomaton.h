@@ -16,6 +16,8 @@ public:
     CellAutomaton(World* _world, int _cx, int _cy);
     ~CellAutomaton();
 
+    static void initChunk(Chunk& chunk);
+
     // x and y must be between -8 and 24
     Cell* getCell(int x, int y);
 

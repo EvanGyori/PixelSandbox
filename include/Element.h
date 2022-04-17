@@ -11,6 +11,7 @@ enum ELEMENTS
 {
     EMPTY,
     SAND,
+    STONE,
     ENUM_SIZE
 };
 
@@ -22,7 +23,7 @@ public:
     static Element* elements[ELEMENTS::ENUM_SIZE];
 
     Element();
-    Element(ty::ElementId _id, float _mass);
+    Element(ty::ElementId _id, bool _solid, float _mass);
     virtual ~Element();
 
     virtual void initCell(Cell& cell);
@@ -31,19 +32,30 @@ public:
     virtual void updateCell(CellAutomaton& cellAutomaton, 
     Cell& cell, int x, int y);
 
+    bool isSolid();
+    float getMass();
+
 protected:
     ty::ElementId id;
+    bool solid;
     float mass;
 };
 
-class Sand : public Element
+class FallingElement : public Element
 {
 public:
-    Sand(ty::ElementId _id, float _mass);
-    virtual ~Sand();
+    FallingElement(ty::ElementId _id, bool _solid, float _mass);
 
     virtual void initCell(Cell& cell);
 
     virtual void updateCell(CellAutomaton& CellAutomaton,
     Cell& cell, int x, int y);
+};
+
+class StoneElement : public Element
+{
+public:
+    StoneElement(ty::ElementId _id, bool _solid, float _mass);
+
+    virtual void initCell(Cell& cell);
 };
