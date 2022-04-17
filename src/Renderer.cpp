@@ -32,6 +32,7 @@ void Renderer::drawPixel(uint32_t color, int x, int y)
 
     camera->convertToScreen(x, y, sw, sh);
 
+    /*
     #if defined(DEBUG)
         // Check if the cell is within drawing bounds
         if (!(x + w - 1 >= 0 && y + h - 1 >= 0 && x < sw && y < sh)) {
@@ -39,6 +40,7 @@ void Renderer::drawPixel(uint32_t color, int x, int y)
             return;
         }
     #endif
+    */
 
     // No need for checking if rect is within bounds
     SDL_Rect rect;
@@ -63,7 +65,7 @@ void Renderer::draw()
 {
     SDL_GetWindowSize(window, &sw, &sh);
 
-    ChunkMap* chunks = world->getChunks();
+    ty::ChunkMap* chunks = world->getChunks();
 
     /*
     // csw and csh - chunk screen width and height,

@@ -3,16 +3,12 @@
 #include <cstdint>
 #include <cstdlib>
 
+#include "Settings.h"
+
 struct Cell
 {
+    ty::ElementId element;
     uint32_t color;
 
-    Cell()
-    {
-    }
-
-    Cell(uint32_t _color)
-    {
-        color = _color;
-    }
+    Cell();
 };

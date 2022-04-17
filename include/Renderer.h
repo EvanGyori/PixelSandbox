@@ -4,6 +4,7 @@
 #include <iostream>
 #include <cstdint>
 
+#include "Settings.h"
 #include "Camera.h"
 #include "World.h"
 

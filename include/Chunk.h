@@ -8,6 +8,8 @@
 struct Chunk
 {
 public:
+    // Dont edit without making sure value doesn't go
+    // above ty::CellIndex type
     static const int size = 16;
     static const int cellsLength = size * size;
 

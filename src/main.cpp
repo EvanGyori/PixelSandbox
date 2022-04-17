@@ -1,6 +1,6 @@
 /*
 Debug Terminal Command:
-g++ -o debug -Wall -I ./include/ src/main.cpp src/Renderer.cpp src/Camera.cpp src/InputHandler.cpp src/Chunk.cpp src/World.cpp -lSDL2
+g++ -o debug -Wall -I ./include/ src/main.cpp src/Cell.cpp src/Renderer.cpp src/Camera.cpp src/InputHandler.cpp src/Chunk.cpp src/World.cpp src/Element.cpp src/CellAutomaton.cpp -lSDL2
 
 */
 
@@ -10,9 +10,11 @@ g++ -o debug -Wall -I ./include/ src/main.cpp src/Renderer.cpp src/Camera.cpp sr
 #include <chrono>
 #include <thread>
 
+#include "CellAutomaton.h"
 #include "Renderer.h"
 #include "InputHandler.h"
 #include "World.h"
+#include "Element.h"
 
 #define DEBUG
 
@@ -23,7 +25,7 @@ typedef ch::system_clock::time_point ch_time;
 ch_time frameTimer;
 
 // minimum time per frame in seconds
-const float refreshRateCap = 0.01;
+const float refreshRateCap = 0.3f;
 
 // how long mainloop took to complete
 float frameTime;
@@ -70,6 +72,14 @@ void initInputHandler()
     });
 }
 
+void initElements()
+{
+    Element::elements[ELEMENTS::EMPTY] =
+        new Element(ELEMENTS::EMPTY, 0.0f);
+    Element::elements[ELEMENTS::SAND] =
+        new Sand(ELEMENTS::SAND, 1.0f);
+}
+
 int init()
 {
     if (SDL_Init(SDL_INIT_VIDEO) != 0) {
@@ -78,7 +88,7 @@ int init()
     }
 
     window = SDL_CreateWindow("Falling Sand", SDL_WINDOWPOS_UNDEFINED,
-    SDL_WINDOWPOS_UNDEFINED, 100, 100, SDL_WINDOW_RESIZABLE);
+    SDL_WINDOWPOS_UNDEFINED, 400, 300, SDL_WINDOW_RESIZABLE);
     surface = SDL_GetWindowSurface(window);
 
     if (surface->format->BitsPerPixel != 32) {
@@ -88,12 +98,16 @@ int init()
 
     renderer = Renderer(window, &world, &mainCamera);
     initInputHandler();
+    initElements();
+
+    /*
     for (int x = -10; x < 10; x++) {
         for (int y = -10; y < 10; y++) {
             world.createEmptyChunk(x, y);
         }
     }
-    //world.createEmptyChunk(0, 0);
+    */
+    world.createEmptyChunk(0, 0);
     //world.createEmptyChunk(-1, -1);
 
     return 0;
@@ -123,8 +137,6 @@ void draw()
 
     SDL_FillRect(surface, nullptr, 0);
     renderer.draw();
-    //renderer.drawPixel(0xFFFFFF, -1, -1);
-    //renderer.drawPixel(0xFFFFFF, 0, 0);
 
     // Stop drawing
     if (shouldLock) { SDL_UnlockSurface(surface); }
@@ -156,12 +168,22 @@ void mainloop()
 {
     pollEvents();
     inputHandler.update();
+
+    for (auto& chunk : (*world.getChunks())) {
+        CellAutomaton updateTest(&world, chunk.first.first, chunk.first.second);
+    }
+
+    //CellAutomaton updateTest(&world, 0, 0);
     draw();
     updateTimers();
 }
 
 void quit()
 {
+    for (int i = 0; i < ELEMENTS::ENUM_SIZE; i++) {
+        delete Element::elements[i];
+    }
+    
     SDL_DestroyWindow(window);
     SDL_Quit();
 }

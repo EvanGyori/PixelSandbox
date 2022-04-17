@@ -8,7 +8,7 @@ World::~World()
 {
 }
 
-ChunkMap* World::getChunks()
+ty::ChunkMap* World::getChunks()
 {
     return &chunks;
 }
