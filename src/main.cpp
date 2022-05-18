@@ -25,7 +25,7 @@ typedef ch::system_clock::time_point ch_time;
 ch_time frameTimer;
 
 // minimum time per frame in seconds
-const float refreshRateCap = 0.1f;
+const float refreshRateCap = 0.3f;
 
 // how long mainloop took to complete
 float frameTime;
@@ -46,6 +46,9 @@ World world;
 Renderer renderer;
 Camera mainCamera;
 InputHandler inputHandler;
+
+ty::ElementId elementBrush;
+const int brushSize = 5;
 
 bool running;
 
@@ -70,10 +73,21 @@ void initInputHandler()
     inputHandler.addEvent("moveRight", [&]() {
         mainCamera.move(deltaTime, 0.0f);
     });
+
+    inputHandler.addEvent("paintBrush", [&]() {
+        int x = event.button.x;
+        int y = event.button.y;
+        int sw, sh;
+        SDL_GetWindowSize(window, &sw, &sh);
+        mainCamera.convertToWorld(x, y, sw, sh);
+
+        //CellAutomaton::setCell()
+    });
 }
 
 void initElements()
 {
+    elementBrush = ELEMENTS::EMPTY;
     Element::elements[ELEMENTS::EMPTY] =
         new Element(ELEMENTS::EMPTY, false, 0.0f);
     Element::elements[ELEMENTS::SAND] =
@@ -84,6 +98,7 @@ void initElements()
 
 int init()
 {
+    CellAutomaton::world = &world;
     if (SDL_Init(SDL_INIT_VIDEO) != 0) {
         std::cout << "Unable to initialize SDL" << std::endl;
         return 1;
@@ -180,7 +195,7 @@ void mainloop()
     inputHandler.update();
 
     for (auto& chunk : (*world.getChunks())) {
-        CellAutomaton updateTest(&world, chunk.first.first, chunk.first.second);
+        CellAutomaton updateTest(chunk.first.first, chunk.first.second);
     }
 
     //CellAutomaton updateTest(&world, 0, 0);

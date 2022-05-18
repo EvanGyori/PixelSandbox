@@ -11,15 +11,23 @@
 class CellAutomaton
 {
 public:
+    static World* world;
+
     // Give x and y of chunk, updates the chunk upon initilization
     // delete this instance afterwards
-    CellAutomaton(World* _world, int _cx, int _cy);
+    CellAutomaton(int _cx, int _cy);
     ~CellAutomaton();
 
     static void initChunk(Chunk& chunk);
 
+    // World coordinates
+    static Cell* setCell(Cell cell, int x, int y);
+
     // x and y must be between -8 and 24
     Cell* getCell(int x, int y);
+
+    // If no chunk exists here, create an empty chunk
+    static Chunk* getChunk(int x, int y);
 
     // x and y must be between -8 and 24
     void swapCells(int x1, int y1, int x2, int y2);
@@ -28,7 +36,6 @@ public:
     bool inBounds(int x, int y);
 
 private:
-    World* world;
     // The chunk being updated
     Chunk* chunk;
     

@@ -1,7 +1,8 @@
 #include "CellAutomaton.h"
 
-CellAutomaton::CellAutomaton(World* _world, int _cx, int _cy)
-: world(_world)
+World* CellAutomaton::world = nullptr;
+
+CellAutomaton::CellAutomaton(int _cx, int _cy)
 {
     cx = _cx;
     cy = _cy;
@@ -59,6 +60,18 @@ void CellAutomaton::initChunk(Chunk& chunk)
     }
 }
 
+Cell* CellAutomaton::setCell(Cell cell, int x, int y)
+{
+    int cx = x/Chunk::size;
+    int cy = y/Chunk::size;
+
+    x %= Chunk::size;
+    y %= Chunk::size;
+    
+    Element::elements[cell.element]->initCell(cell);
+    getChunk(cx, cy)->cells[x + y * Chunk::size] = cell;
+}
+
 Cell* CellAutomaton::getCell(int x, int y)
 {
     #if defined(DEBUG)
@@ -92,20 +105,23 @@ Cell* CellAutomaton::getCell(int x, int y)
     }
 
     // TODO find way to create chunks in multithreading
-    Chunk* cellChunk = nullptr;
-    ty::ChunkMap* chunkMap = world->getChunks();
-    auto pair = std::make_pair(chunkX, chunkY);
 
-    if (chunkMap->find(pair) != chunkMap->end()) {
-        cellChunk = &chunkMap->at(pair);
+    return &getChunk(chunkX, chunkY)->cells[x + y * Chunk::size];
+}
+
+Chunk* CellAutomaton::getChunk(int x, int y)
+{
+    ty::ChunkMap* chunks = world->getChunks();
+    auto pair = std::make_pair(x, y);
+
+    if (chunks->find(pair) != chunks->end()) {
+        return &chunks->at(pair);
     } else {
-        // If no chunk exists at the spot, create an empty one
-        world->createEmptyChunk(chunkX, chunkY);
-        cellChunk = &chunkMap->at(pair);
-        initChunk((*cellChunk));
+        world->createEmptyChunk(x, y);
+        initChunk(chunks->at(pair));
+        return &chunks->at(pair);
     }
 
-    return &cellChunk->cells[x + y * Chunk::size];
 }
 
 void CellAutomaton::swapCells(int x1, int y1, int x2, int y2)
