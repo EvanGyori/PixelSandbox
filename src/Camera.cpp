@@ -1,12 +1,14 @@
 #include "Camera.h"
 
+#include <cmath>
+
 Camera::Camera()
 {
     x = 0.0f;
     y = 0.0f;
     cellToPixels = 5;
 
-    panSpeed = 10.0f;
+    panSpeed = 2000.0f;
     zoomSpeed = 1;
 }
 
@@ -49,6 +51,9 @@ void Camera::convertToWorld(int& posX, int& posY, int sw, int sh)
 
 void Camera::move(float dx, float dy)
 {
-    x += dx * panSpeed;
-    y += dy * panSpeed;
+    x += dx * panSpeed * pow(0.9f, cellToPixels);
+    y += dy * panSpeed * pow(0.9f, cellToPixels);
 }
+
+
+

@@ -1,0 +1,35 @@
+prefix="g++ -Wall -I ./include/ "
+
+for argument in "$@"
+do
+	fileName=$argument".cpp"
+	objectName=$argument".o"
+	lastEdited=$(stat ./src/$fileName --format=%Y)
+	if [ -f ./modTimes/$fileName ]
+	then
+		echo ""
+	else
+		echo 0 > ./modTimes/$fileName
+	fi
+	lastCompiled=$(cat ./modTimes/$fileName)
+	if [ $lastEdited -eq $lastCompiled ]
+	then
+		echo $objectName " up to date"
+	else
+		$prefix -c src/$fileName -o obj/$objectName
+		echo $lastEdited > ./modTimes/$fileName
+	fi
+done
+
+$prefix -lSDL2 -o debug obj/main.o obj/Cell.o obj/Renderer.o obj/Camera.o obj/InputHandler.o obj/Chunk.o obj/World.o obj/Element.o obj/CellAutomaton.o
+
+
+
+#g++ -Wall -I ./include/ -lSDL2 -o debug obj/main.o obj/Cell.o obj/Renderer.o obj/Camera.o obj/InputHandler.o obj/Chunk.o obj/World.o obj/Element.o obj/CellAutomaton.o
+
+
+
+
+
+
+#g++ -o debug -Wall -I ./include/ src/main.cpp src/Cell.cpp src/Renderer.cpp src/Camera.cpp src/InputHandler.cpp src/Chunk.cpp src/World.cpp src/Element.cpp src/CellAutomaton.cpp -lSDL2

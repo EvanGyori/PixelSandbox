@@ -1,6 +1,11 @@
 #include "CellAutomaton.h"
 
+#include <bits/stdc++.h>
+#include <ctime>
+
 World* CellAutomaton::world = nullptr;
+
+static int seed = 0;
 
 CellAutomaton::CellAutomaton(int _cx, int _cy)
 {
@@ -31,19 +36,40 @@ CellAutomaton::CellAutomaton(int _cx, int _cy)
         changes[i].first = i;
         changes[i].second = i;
     }
+    
 
     // To get the cell of the current iteration in a loop,
     // use the destination as an index in the chunk
     // cell array
+    /*
     for (int x = 0; x < Chunk::size; x++)
     for (int y = 0; y < Chunk::size; y++) {
         int index = x + y * Chunk::size;
         // If destination is -1, the cell that was originally here
         // is now in a different chunk and can be skipped
         if (changes[index].second != -1) {
-            Cell* cell = &chunk->cells[changes[index].second];
+            Cell* cell = &(chunk->cells[changes[index].second]);
+            int cellX = changes[index].second % 16;
+            int cellY = changes[index].second / 16;
             Element::elements[cell->element]->updateCell(
-                (*this), (*cell), x, y);
+                (*this), (*cell), cellX, cellY);
+        }
+    }
+    */
+    
+    int order[256];
+    for (int i = 0; i < 256; i++) order[i] = i;
+    std::shuffle(order, order + 256, std::default_random_engine(seed++));
+    
+    for (int i = 0; i < 256; i++) {
+    	int index = order[i];
+    	
+    	if (changes[index].second != -1) {
+            Cell* cell = &(chunk->cells[changes[index].second]);
+            int x = changes[index].second % 16;
+    		int y = changes[index].second / 16;
+            Element::elements[cell->element]->updateCell(
+                (*this), (*cell), x, y, 0.1f); // TODO add actual deltaTime
         }
     }
 }
@@ -77,9 +103,12 @@ Cell* CellAutomaton::getCell(int x, int y)
     #if defined(DEBUG)
     if (x < -Chunk::size/2 || y < -Chunk::size/2 ||
     x >= Chunk::size * 3/2 || y >= Chunk::size * 3/2) {
+    	/*
         std::cout << "ERROR: attempting to edit cells out of "
         << "the thread's bounds which may cause multi-thread "
         << "overlapping" << std::endl;
+        */
+        return nullptr;
     }
     #endif
 

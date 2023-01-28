@@ -25,7 +25,11 @@ typedef ch::system_clock::time_point ch_time;
 ch_time frameTimer;
 
 // minimum time per frame in seconds
-const float refreshRateCap = 0.3f;
+const float refreshRateCap = 0.001f;
+const float updateElementsRate = 0.001f;
+
+// how long since the last elements update
+float elementsTimer;
 
 // how long mainloop took to complete
 float frameTime;
@@ -124,17 +128,21 @@ int init()
         }
     }
     */
-    world.createEmptyChunk(0, 0);
-    Chunk& chunk = world.getChunks()->at(std::make_pair(0, 0));
-    for (int i = 0; i < Chunk::cellsLength; i++) {
-        chunk.cells[i].element = rand() % 2;
-    }
-    for (int i = 240; i < 256; i++) {
-        chunk.cells[i].element = 2;
-    }
-    CellAutomaton::initChunk(chunk);
-    //world.createEmptyChunk(-1, -1);
-
+    for (int y = 0; y < 10; y++) {
+		for (int x = 0; x < 5; x++) {
+			world.createEmptyChunk(x, y);
+			Chunk& chunk = world.getChunks()->at(std::make_pair(x, y));
+			for (int i = 0; i < Chunk::cellsLength; i++) {
+				chunk.cells[i].element = rand() % 2;
+			}
+			for (int i = 240; i < 256 && y == 9; i++) {
+				chunk.cells[i].element = 2;
+			}
+			CellAutomaton::initChunk(chunk);
+			//world.createEmptyChunk(-1, -1);
+		}
+	}
+	
     return 0;
 }
 
@@ -179,6 +187,7 @@ void updateTimers()
         frameTimer.time_since_epoch()).count()) / 1000.0f;
 
     deltaTime = timeSlept + frameTime;
+    elementsTimer += deltaTime;
 
     // Put main thread to sleep so fps doesn't exceed refreshRateCap
     if (frameTime < refreshRateCap) {
@@ -194,11 +203,13 @@ void mainloop()
     pollEvents();
     inputHandler.update();
 
-    for (auto& chunk : (*world.getChunks())) {
-        CellAutomaton updateTest(chunk.first.first, chunk.first.second);
-    }
+	if (elementsTimer >= updateElementsRate) {
+		elementsTimer = 0.0f;
+		for (auto& chunk : (*world.getChunks())) {
+		    CellAutomaton updateTest(chunk.first.first, chunk.first.second);
+		}
+	}
 
-    //CellAutomaton updateTest(&world, 0, 0);
     draw();
     updateTimers();
 }

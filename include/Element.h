@@ -30,7 +30,7 @@ public:
 
     // x and y are relative to the chunk the cell started in
     virtual void updateCell(CellAutomaton& cellAutomaton, 
-    Cell& cell, int x, int y);
+    Cell& cell, int x, int y, float deltaTime);
 
     bool isSolid();
     float getMass();
@@ -49,7 +49,7 @@ public:
     virtual void initCell(Cell& cell);
 
     virtual void updateCell(CellAutomaton& CellAutomaton,
-    Cell& cell, int x, int y);
+    Cell& cell, int x, int y, float deltaTime);
 };
 
 class StoneElement : public Element

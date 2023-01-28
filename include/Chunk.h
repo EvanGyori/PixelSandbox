@@ -17,7 +17,6 @@ public:
     int x, y;
 
     // 16 x 16 cells
-    // Temp - true if sand, false if nothing
     Cell cells[cellsLength];
 
     Chunk();

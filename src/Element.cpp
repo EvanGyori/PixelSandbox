@@ -1,5 +1,8 @@
 #include "Element.h"
 
+#include <cmath>
+#include <iostream>
+
 Element* Element::elements[ELEMENTS::ENUM_SIZE];
 
 Element::Element()
@@ -25,8 +28,53 @@ void Element::initCell(Cell& cell)
 }
 
 void Element::updateCell(CellAutomaton& cellAutomaton, 
-Cell& cell, int x, int y)
+Cell& cell, int x, int y, float deltaTime)
 {
+	int endX = x + floor(cell.vx * deltaTime);
+	int endY = y + floor(cell.vy * deltaTime);
+	float progress = 0.0f;
+	float step;
+	if (endX > endY) {
+		step = 1.0f/abs(endX - x);
+	} else {
+		step = 1.0f/abs(endY - y);
+	}
+	
+	float dx = 0.0f;
+	float dy = 0.0f;
+	
+	while (progress < 1.0f) {
+		progress += step;
+		dx += step * (endX - x);
+		dy += step * (endY - y);
+		int targetX = x;
+		int targetY = y;
+		if (dx >= 1.0f) {
+			dx--;
+			targetX++;
+		} else if (dx <= -1.0f) {
+			dx++;
+			targetX--;
+		}
+		if (dy >= 1.0f) {
+			dy--;
+			targetY++;
+		} else if (dy <= -1.0f) {
+			dy++;
+			targetY--;
+		}
+		
+		if (targetX != x || targetY != y) { // redundant
+			Element* targetCell = Element::elements[cellAutomaton.getCell(targetX, targetY)->element];
+			if (targetCell != nullptr && !targetCell->isSolid() && targetCell->getMass() < mass) {
+				cellAutomaton.swapCells(x, y, targetX, targetY);
+				x = targetX;
+				y = targetY;
+			} else {
+				progress = 1.0f;
+			}
+		}
+	}
 }
 
 bool Element::isSolid()
@@ -55,31 +103,30 @@ void FallingElement::initCell(Cell& cell)
 }
 
 void FallingElement::updateCell(CellAutomaton& cellAutomaton, 
-Cell& cell, int x, int y)
+Cell& cell, int x, int y, float deltaTime)
 {
-    // Down
-    Element* element =
-    Element::elements[cellAutomaton.getCell(x, y+1)->element];
-    if (!element->isSolid() && element->getMass() < mass) {
-        cellAutomaton.swapCells(x, y, x, y + 1);
-        return;
-    }
-
-    // Left
-    element =
-    Element::elements[cellAutomaton.getCell(x-1, y+1)->element];
-    if (!element->isSolid() && element->getMass() < mass) {
-        cellAutomaton.swapCells(x, y, x-1, y+1);
-        return;
-    }
-
-    // Right
-    element =
-    Element::elements[cellAutomaton.getCell(x+1, y+1)->element];
-    if (!element->isSolid() && element->getMass() < mass) {
-        cellAutomaton.swapCells(x, y, x+1, y+1);
-        return;
-    }
+	/*
+	int order[] = {0, -1, 1};
+	if (rand() % 2 == 0) {
+		order[1] = 1;
+		order[2] = -1;
+	}
+	
+	// Down and down to the left and right
+	for (int i = 0; i < 3; i++) {
+		int targetX = x + order[i];
+		int targetY = y + 1;
+		Element* targetCell = Element::elements[cellAutomaton.getCell(targetX, targetY)->element];
+		if (!targetCell->isSolid() && targetCell->getMass() < mass) {
+		    cellAutomaton.swapCells(x, y, targetX, targetY);
+		    break;
+		}
+	}
+	*/
+	
+	cell.vy += 0.1f * deltaTime;
+	
+	Element::updateCell(cellAutomaton, cell, x, y, deltaTime);
 }
 
 StoneElement::StoneElement(ty::ElementId _id, bool _solid, float _mass)

@@ -9,6 +9,7 @@ struct Cell
 {
     ty::ElementId element;
     uint32_t color;
+    float vx, vy;
 
     Cell();
 };
