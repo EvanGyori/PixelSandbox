@@ -124,7 +124,7 @@ Cell& cell, int x, int y, float deltaTime)
 	}
 	*/
 	
-	cell.vy += 0.1f * deltaTime;
+	cell.vy += 0.3f * deltaTime;
 	
 	Element::updateCell(cellAutomaton, cell, x, y, deltaTime);
 }

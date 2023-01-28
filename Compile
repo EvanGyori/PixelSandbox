@@ -1,4 +1,5 @@
 prefix="g++ -Wall -I ./include/ "
+compile="$prefix -o debug"
 
 for argument in "$@"
 do
@@ -7,21 +8,26 @@ do
 	lastEdited=$(stat ./src/$fileName --format=%Y)
 	if [ -f ./modTimes/$fileName ]
 	then
-		echo ""
+		echo "" > /dev/null
 	else
 		echo 0 > ./modTimes/$fileName
 	fi
 	lastCompiled=$(cat ./modTimes/$fileName)
 	if [ $lastEdited -eq $lastCompiled ]
 	then
-		echo $objectName " up to date"
+		echo $objectName up to date
 	else
 		$prefix -c src/$fileName -o obj/$objectName
 		echo $lastEdited > ./modTimes/$fileName
+		echo updated $objectName
 	fi
+	
+	compile="$compile obj/$objectName"
 done
 
-$prefix -lSDL2 -o debug obj/main.o obj/Cell.o obj/Renderer.o obj/Camera.o obj/InputHandler.o obj/Chunk.o obj/World.o obj/Element.o obj/CellAutomaton.o
+$compile -lSDL2
+
+#$prefix -o debug obj/main.o obj/Cell.o obj/Renderer.o obj/Camera.o obj/InputHandler.o obj/Chunk.o obj/World.o obj/Element.o obj/CellAutomaton.o
 
 
 

@@ -2,6 +2,7 @@
 Debug Terminal Command:
 g++ -o debug -Wall -I ./include/ src/main.cpp src/Cell.cpp src/Renderer.cpp src/Camera.cpp src/InputHandler.cpp src/Chunk.cpp src/World.cpp src/Element.cpp src/CellAutomaton.cpp -lSDL2
 
+./Compile main Cell Renderer Camera InputHandler Chunk World Element CellAutomaton
 */
 
 
