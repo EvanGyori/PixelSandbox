@@ -1,5 +1,7 @@
 #include "InputHandler.h"
 
+#include <iostream>
+
 InputHandler::InputHandler()
 {
 }
@@ -17,6 +19,10 @@ void InputHandler::handleEvent(SDL_Event& event)
 {
     if (event.type == SDL_MOUSEWHEEL) {
         events.at("zoom")();
+    } else if (event.type == SDL_KEYUP) {
+    	if (event.key.keysym.scancode == SDL_SCANCODE_SPACE) {
+    		events.at("togglePause")();
+    	}
     }
 }
 

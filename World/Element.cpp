@@ -27,9 +27,45 @@ void Element::initCell(Cell& cell)
     cell.color = 0x000000;
 }
 
+// Only works with positive velocities currently
 void Element::updateCell(CellAutomaton& cellAutomaton, 
 Cell& cell, int x, int y, float deltaTime)
 {
+	if (cell.vx == 0 && cell.vy == 0) return;
+	
+	float dx = cell.vx * deltaTime + cell.progressX;
+	float dy = cell.vy * deltaTime + cell.progressY;
+	
+	float mx = 1;
+	float my = 1;
+	if (dx == 0) {
+		mx = 0;
+	} else if (dy == 0) {
+		my = 0;
+	} else if (dx > dy) {
+		my = dy / dx;
+	} else if (dy > dx) {
+		mx = dx / dy;
+	}
+	
+	while (dx >= 1 || dy >= 1) {
+		int targetX = x + mx;
+		int targetY = y + my;
+		Element* targetCell = Element::elements[cellAutomaton.getCell(targetX, targetY)->element];
+		if (targetCell != nullptr && !targetCell->isSolid() && targetCell->getMass() < mass) {
+			cellAutomaton.swapCells(x, y, targetX, targetY);
+			x = targetX;
+			y = targetY;
+		}
+		
+		dx -= mx;
+		dy -= my;
+	}
+	
+	cell.progressX = dx;
+	cell.progressY = dy;
+	
+	/*
 	int endX = x + floor(cell.vx * deltaTime);
 	int endY = y + floor(cell.vy * deltaTime);
 	float progress = 0.0f;
@@ -75,6 +111,7 @@ Cell& cell, int x, int y, float deltaTime)
 			}
 		}
 	}
+	*/
 }
 
 bool Element::isSolid()
@@ -105,7 +142,6 @@ void FallingElement::initCell(Cell& cell)
 void FallingElement::updateCell(CellAutomaton& cellAutomaton, 
 Cell& cell, int x, int y, float deltaTime)
 {
-	/*
 	int order[] = {0, -1, 1};
 	if (rand() % 2 == 0) {
 		order[1] = 1;
@@ -122,11 +158,11 @@ Cell& cell, int x, int y, float deltaTime)
 		    break;
 		}
 	}
-	*/
 	
-	cell.vy += 0.3f * deltaTime;
+	//cell.vy += 0.001f * deltaTime;
+	//cell.vy = 1.0f;
 	
-	Element::updateCell(cellAutomaton, cell, x, y, deltaTime);
+	//Element::updateCell(cellAutomaton, cell, x, y, deltaTime);
 }
 
 StoneElement::StoneElement(ty::ElementId _id, bool _solid, float _mass)

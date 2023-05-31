@@ -11,14 +11,13 @@ g++ -o debug -Wall -I ./include/ src/main.cpp src/Cell.cpp src/Renderer.cpp src/
 #include <chrono>
 #include <thread>
 
-#include "CellAutomaton.h"
-#include "Renderer.h"
-#include "InputHandler.h"
-#include "World.h"
-#include "Element.h"
+#include "World/CellAutomaton.h"
+#include "World/Renderer.h"
+#include "World/InputHandler.h"
+#include "World/World.h"
+#include "World/Element.h"
 
 #define DEBUG
-
 
 namespace ch = std::chrono;
 typedef ch::system_clock::time_point ch_time;
@@ -27,7 +26,8 @@ ch_time frameTimer;
 
 // minimum time per frame in seconds
 const float refreshRateCap = 0.001f;
-const float updateElementsRate = 0.001f;
+const float updateElementsRate = 0.01f;
+bool paused;
 
 // how long since the last elements update
 float elementsTimer;
@@ -88,6 +88,10 @@ void initInputHandler()
 
         //CellAutomaton::setCell()
     });
+    
+    inputHandler.addEvent("togglePause", [&]() {
+    	paused = !paused;
+    });
 }
 
 void initElements()
@@ -103,6 +107,8 @@ void initElements()
 
 int init()
 {
+	paused = false;
+
     CellAutomaton::world = &world;
     if (SDL_Init(SDL_INIT_VIDEO) != 0) {
         std::cout << "Unable to initialize SDL" << std::endl;
@@ -129,14 +135,14 @@ int init()
         }
     }
     */
-    for (int y = 0; y < 10; y++) {
-		for (int x = 0; x < 5; x++) {
+    for (int y = 0; y < 5; y++) {
+		for (int x = 0; x < 3; x++) {
 			world.createEmptyChunk(x, y);
 			Chunk& chunk = world.getChunks()->at(std::make_pair(x, y));
 			for (int i = 0; i < Chunk::cellsLength; i++) {
 				chunk.cells[i].element = rand() % 2;
 			}
-			for (int i = 240; i < 256 && y == 9; i++) {
+			for (int i = 240; i < 256 && y == 4; i++) {
 				chunk.cells[i].element = 2;
 			}
 			CellAutomaton::initChunk(chunk);
@@ -204,7 +210,7 @@ void mainloop()
     pollEvents();
     inputHandler.update();
 
-	if (elementsTimer >= updateElementsRate) {
+	if (elementsTimer >= updateElementsRate && !paused) {
 		elementsTimer = 0.0f;
 		for (auto& chunk : (*world.getChunks())) {
 		    CellAutomaton updateTest(chunk.first.first, chunk.first.second);

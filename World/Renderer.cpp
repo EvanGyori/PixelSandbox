@@ -101,7 +101,7 @@ void Renderer::draw()
             auto key = std::make_pair(x, y);
             if (chunks->find(key) != chunks->end()) {
                 drawChunk((*chunks)[key]);
-                debugChunk((*chunks)[key], 0x123fff);
+                //debugChunk((*chunks)[key], 0x123fff);
             }
         }
     }

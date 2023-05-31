@@ -37,11 +37,10 @@ CellAutomaton::CellAutomaton(int _cx, int _cy)
         changes[i].second = i;
     }
     
-
+	/*
     // To get the cell of the current iteration in a loop,
     // use the destination as an index in the chunk
     // cell array
-    /*
     for (int x = 0; x < Chunk::size; x++)
     for (int y = 0; y < Chunk::size; y++) {
         int index = x + y * Chunk::size;
@@ -49,25 +48,26 @@ CellAutomaton::CellAutomaton(int _cx, int _cy)
         // is now in a different chunk and can be skipped
         if (changes[index].second != -1) {
             Cell* cell = &(chunk->cells[changes[index].second]);
-            int cellX = changes[index].second % 16;
-            int cellY = changes[index].second / 16;
+            int cellX = changes[index].second % Chunk::size;
+            int cellY = changes[index].second / Chunk::size;
             Element::elements[cell->element]->updateCell(
-                (*this), (*cell), cellX, cellY);
+                (*this), (*cell), cellX, cellY, 0.1f);
         }
     }
     */
     
-    int order[256];
-    for (int i = 0; i < 256; i++) order[i] = i;
-    std::shuffle(order, order + 256, std::default_random_engine(seed++));
+    int totalCells = Chunk::size * Chunk::size;
+    int order[totalCells];
+    for (int i = 0; i < totalCells; i++) order[i] = i;
+    std::shuffle(order, order + totalCells, std::default_random_engine(seed++));
     
-    for (int i = 0; i < 256; i++) {
+    for (int i = 0; i < totalCells; i++) {
     	int index = order[i];
     	
     	if (changes[index].second != -1) {
             Cell* cell = &(chunk->cells[changes[index].second]);
-            int x = changes[index].second % 16;
-    		int y = changes[index].second / 16;
+            int x = changes[index].second % Chunk::size;
+    		int y = changes[index].second / Chunk::size;
             Element::elements[cell->element]->updateCell(
                 (*this), (*cell), x, y, 0.1f); // TODO add actual deltaTime
         }
@@ -135,7 +135,7 @@ Cell* CellAutomaton::getCell(int x, int y)
 
     // TODO find way to create chunks in multithreading
 
-    return &getChunk(chunkX, chunkY)->cells[x + y * Chunk::size];
+    return &getChunk(chunkX, chunkY)->cells[x + y * Chunk::size]; // 3 + 5 * 4 = 23
 }
 
 Chunk* CellAutomaton::getChunk(int x, int y)
