@@ -1,6 +1,8 @@
 #pragma once
 
-#include <bits/stdc++.h>
+#include <utility>
+#include <cstdlib>
+#include <functional>
 
 struct HashPair
 {

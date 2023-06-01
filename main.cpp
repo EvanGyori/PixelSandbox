@@ -7,6 +7,7 @@ g++ -o debug -Wall -I ./include/ src/main.cpp src/Cell.cpp src/Renderer.cpp src/
 
 
 #include "SDL2/SDL.h"
+#undef main
 #include <iostream>
 #include <chrono>
 #include <thread>

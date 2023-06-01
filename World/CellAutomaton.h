@@ -21,7 +21,7 @@ public:
     static void initChunk(Chunk& chunk);
 
     // World coordinates
-    static Cell* setCell(Cell cell, int x, int y);
+    static void setCell(Cell cell, int x, int y);
 
     // x and y must be between -8 and 24
     Cell* getCell(int x, int y);

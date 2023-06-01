@@ -1,7 +1,9 @@
 #include "CellAutomaton.h"
 
-#include <bits/stdc++.h>
+#include <utility>
 #include <ctime>
+#include <algorithm>
+#include <random>
 
 World* CellAutomaton::world = nullptr;
 
@@ -56,7 +58,7 @@ CellAutomaton::CellAutomaton(int _cx, int _cy)
     }
     */
     
-    int totalCells = Chunk::size * Chunk::size;
+    const int totalCells = Chunk::size * Chunk::size;
     int order[totalCells];
     for (int i = 0; i < totalCells; i++) order[i] = i;
     std::shuffle(order, order + totalCells, std::default_random_engine(seed++));
@@ -86,7 +88,7 @@ void CellAutomaton::initChunk(Chunk& chunk)
     }
 }
 
-Cell* CellAutomaton::setCell(Cell cell, int x, int y)
+void CellAutomaton::setCell(Cell cell, int x, int y)
 {
     int cx = x/Chunk::size;
     int cy = y/Chunk::size;
