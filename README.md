@@ -18,4 +18,4 @@ Create a build directory and run cmake from it
 cmake <project-source-directory>
 cmake --build .
 ```
-Creates an executable called `PixelSandbox`. Put the required SDL2 file with this executable in order to run it.
+Creates an executable called `PixelSandbox`. Put the required SDL2 dll file with this executable in order to run it.
