@@ -1,3 +1,5 @@
+<p align="center"> <img src="https://github.com/EvanGyori/PixelSandbox/assets/30540753/1cf6c17d-b9e2-4c27-a466-201349501b3c"> </p>
+
 # Pixel Sandbox
 A sandbox where each pixel of sand falls down onto a platform and forms a pyramid. The rest of the sand slides off and falls into an infinite void.
 
