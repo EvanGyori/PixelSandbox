@@ -13,6 +13,7 @@ All solutions to the pixel sandbox I found online would always allow pixels to d
 ## Controls
 use WASD to pan view
 <p>use mouse scroll wheel to zoom in and out
+<p>Space pauses the simulation
 
 ## Usage
 This program requires SDL2. Make sure `SDL2Config.cmake` can be found by CMake.
