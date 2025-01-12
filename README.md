@@ -11,12 +11,12 @@ The program uses SDL for drawing and window creation.
 All solutions to the pixel sandbox I found online would always allow pixels to disappear for easier implementation but I used a step by step process to allow every pixel to move each frame without being deleted. The conservation of pixels.
 
 ## Controls
-use WASD to pan view
-<p>use mouse scroll wheel to zoom in and out
+Use WASD to pan view
+<p>Use mouse scroll wheel to zoom in and out
 <p>Space pauses the simulation
 
 ## Usage
-This program requires SDL2. Make sure `SDL2Config.cmake` can be found by CMake.
+This program requires [SDL2](https://wiki.libsdl.org/SDL2/Installation) and CMake. Make sure `SDL2Config.cmake` can be found by CMake.
 
 Create a build directory and run cmake from it
 ```
